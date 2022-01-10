@@ -8,10 +8,15 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    //конфигурация сесси по умолчанию
+    let sessionConfiguration = URLSessionConfiguration.default
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        //сессия подключения к сети
+        let session = URLSession(configuration: sessionConfiguration)
+        
     }
 
 
