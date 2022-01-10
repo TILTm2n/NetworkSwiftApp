@@ -11,12 +11,25 @@ class ViewController: UIViewController {
     //конфигурация сесси по умолчанию
     let sessionConfiguration = URLSessionConfiguration.default
     
+    let session = URLSession.shared
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //сессия подключения к сети
-        let session = URLSession(configuration: sessionConfiguration)
+        obtainPosts()
         
+        
+    }
+    
+    func obtainPosts(){
+        //сессия подключения к сети
+        
+        guard let url = URL(string: "https://jsonplaceholder.typicode.com/posts") else {return}
+        
+        session.dataTask(with: url) { (data, response, error) in
+            
+            
+        }.resume()
     }
 
 
