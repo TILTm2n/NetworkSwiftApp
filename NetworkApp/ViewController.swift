@@ -7,14 +7,19 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController{
+    
+    @IBOutlet weak var tableView: UITableView!
+    
     //конфигурация сесси по умолчанию
     let sessionConfiguration = URLSessionConfiguration.default
     let decoder = JSONDecoder()
     let session = URLSession.shared
+    var dataSource = [Post]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.dataSource = self
         
         obtainPosts()
         
@@ -28,11 +33,18 @@ class ViewController: UIViewController {
         
         session.dataTask(with: url) { [weak self] (data, response, error) in
             
-            guard let stringSelf = self else {return}
+            guard let strongSelf = self else {return}
             if error == nil, let parseData = data {
                 
-                let posts = try? stringSelf.decoder.decode([Post].self, from: parseData)
-                print("Posts: \(posts?.count)")
+                guard let posts = try? strongSelf.decoder.decode([Post].self, from: parseData) else {return}
+                
+                strongSelf.dataSource = posts
+                
+                //обновление в любом UI делается в главном потоке
+                DispatchQueue.main.async {
+                    strongSelf.tableView.reloadData()
+                }
+                
             }else{
                 print("\(error)")
             }
@@ -41,5 +53,21 @@ class ViewController: UIViewController {
     }
 
 
+}
+
+extension ViewController: UITableViewDataSource{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return dataSource.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath)
+        
+        let post = dataSource[indexPath.row]
+        cell.textLabel?.text = post.title
+        cell.detailTextLabel?.text = post.body
+        
+        return cell
+    }
 }
 
