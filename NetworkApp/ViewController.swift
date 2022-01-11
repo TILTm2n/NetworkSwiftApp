@@ -31,9 +31,12 @@ class ViewController: UIViewController{
         
         guard let url = URL(string: "https://jsonplaceholder.typicode.com/posts") else {return}
         
+        //для замыкания объявляем ссылку на self как слабую weak
         session.dataTask(with: url) { [weak self] (data, response, error) in
             
+            //так как ссылка на self слабая, то необходимо проверить не nil ли объект, и если не nil, то можно использовать
             guard let strongSelf = self else {return}
+            
             if error == nil, let parseData = data {
                 
                 guard let posts = try? strongSelf.decoder.decode([Post].self, from: parseData) else {return}
